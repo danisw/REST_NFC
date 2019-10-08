@@ -1,0 +1,31 @@
+<?php 
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+require APPPATH . 'libraries/REST_Controller.php';
+Class History extends REST_Controller {
+
+
+public function __construct() {
+       parent::__construct();
+       $this->load->database();
+    }
+
+//get information about latest expired date. Cek and check
+public function index_get(){
+        //ambil data yang punya item code tsb dan 
+        //jika ada dibandingkan yang paling terkini
+        // samakan uid_nfc, kalo sama => return true, slah return false & uid nya
+        $kode_item=$this->uri->segment('4');
+        $qty_input=$this->uri->segment('5');
+        $sql_2="SELECT TOP 1 a.no_rcv ,a.uid_nfc uid, a.kode_item_rcv kode_item, a.exp_date exp_date
+                from nfc_rcv a
+                where a.kode_item_rcv=$kode_item 
+                AND a.qty_rcv >= '$qty_input'
+                order by a.exp_date asc ";
+        $query2 = $this->db->query($sql_2);
+        $data2=$query2->result_array();
+        $this->response($data2, REST_Controller::HTTP_OK);
+
+    } 
+}
+ ?>
