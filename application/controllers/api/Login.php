@@ -103,7 +103,7 @@ public function index_get(){}
 		 $data2=$query2->result_array();
 		$this->response($data2, REST_Controller::HTTP_OK);	
 	}else{
-			$this->response("gagal", REST_Controller::HTTP_OK);	
+			$this->response("Gagal", REST_Controller::HTTP_OK);	
 	 }
 					
     }
