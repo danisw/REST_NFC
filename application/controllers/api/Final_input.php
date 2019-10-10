@@ -113,7 +113,8 @@ class Final_input extends REST_Controller {
 				$user_id=$key["User_ID"];
 			}
 	    //**************** Ambil company, wh_bin *******************//
-	    	$sqll="SELECT a.Bin_ID, a.Bin_Code, a.Bin_Name, a.WH_ID, b.company_id from dbo.TAccWHBin a
+	    	$sqll="SELECT a.Bin_ID, a.Bin_Code, a.Bin_Name, a.WH_ID, b.company_id 
+	    			from dbo.TAccWHBin a
 				   left join dbo.TAccWHLocation b on a.WH_ID=b.wh_id
 				   where a.WH_ID= $whs";
 		    $queryy= $this->db->query($sqll);
@@ -171,11 +172,13 @@ class Final_input extends REST_Controller {
 	        $wht_no = $doc_no.str_repeat("0",$nolnya).$urut;
 
 	    ///**************** Ambil id user wtr ******************///
-	        $sql7="SELECT PreparedBy as id_user_wtr from dbo.TAccWHTRequisition where WHTRequisitionID=$wtr_id";
+	        $sql7="SELECT PreparedBy as id_user_wtr , SourceWH_ID as dest_wh
+	        from dbo.TAccWHTRequisition where WHTRequisitionID=$wtr_id";
 	        $query27 = $this->db->query($sql7);
 	        $arr=$query27->result_array();
 	        foreach ($arr as $key) {
 	        	$USER_WTR=$key["id_user_wtr"];
+	        	$dest_wh=$key["dest_wh"];
 	        }
 
 	    ///*******************  insert ke ***************///
@@ -185,7 +188,7 @@ class Final_input extends REST_Controller {
 			(h_wtr_id, wtr_numb, whtreqnum, WHTReqDate, Status, ApprovalStatus, ItemCategoryType, TransferBy, RequestBy, 
 			whtrequisitionid, SourceWH_ID, DestWH_ID, memo, ket_ret, driver, kontainer, nopol, noseal)
 			select top 1 epoch,no_WTR_pick,'$wht_no',GETDATE(),1,0,'$CAT','$USER_NFC','$USER_WTR',
-			'$wtr_id',$whs,$wh_bin,'$FORM_MEMO','$PB','$SUPIR','$KON','$NOPOL','$NOSEAL' 
+			'$wtr_id',$whs,$dest_wh,'$FORM_MEMO','$PB','$SUPIR','$KON','$NOPOL','$NOSEAL' 
 			from nfc_transaksi WHERE epoch='$epoch'";
 			$query = $this->db->query($sql);
 
