@@ -13,7 +13,7 @@ class WTR_header extends REST_Controller {
 		$destwh_id=$this->uri->segment('4');
 		$scwh_id=$this->uri->segment('5');
 
-		/****** Untuk get Data list WTR yang ditampilkan di awal , parameter wh_dest, wh-source, masih manual ****/
+		/****** Untuk get Data list WTR yang ditampilkan di awal ****/
 		$sql="SELECT DISTINCT
         TACCWHTREQUISITION.whtrequisitionnum AS no_wtr,
         ISNULL( (Select DISTINCT epoch from dbo.nfc_transaksi a
@@ -71,8 +71,44 @@ class WTR_header extends REST_Controller {
         order by TACCWHLOCATION.WH_NAME desc,TACCWHTREQUISITION.whtrequisitionnum asc";
 
         $query2 = $this->db->query($sql);
-        			 $data2=$query2->result_array();
-        			 $this->response($data2, REST_Controller::HTTP_OK);
+        $data2=$query2->result_array();
+        $data_final=array();
+
+        foreach($data2 as $key){
+          $NO_WTR=$key["no_wtr"];
+            $sql27="SELECT * , ISNULL(CAST ((Approved_qty/request_qty)*100 as int ),0) AS presentase from
+                    (select a.WHTRequisitionID, SUM(b.request_qty) as request_qty from dbo.TAccWHTRequisition a 
+                    left join dbo.TAccWHTRequisition_Detail b on a.WHTRequisitionNum=b.WHTRequisitionNum
+                    where a.WHTRequisitionNum='$NO_WTR' 
+                    group by a.WHTRequisitionID
+                    ) A 
+                    left join
+                   (select a.whtrequisitionid, SUM(b.Approved_qty) as Approved_qty
+                   from dbo.TAccWHTransfer_Header a 
+                   left join dbo.TAccWHTransfer_Detail b on a.WHTReqNum=b.WHTReqNum
+                   where a.ApprovalStatus=3 and ISNULL(a.isVoid,0)=0
+                   group BY a.whtrequisitionid
+                   ) B on A.WHTRequisitionID=B.whtrequisitionid";
+
+                  $query = $this->db->query($sql27);
+                  $data=$query->result_array();
+                  foreach ($data as $key2) {
+                    $presentase = $key2["presentase"];
+                    $request_qty = round($key2["request_qty"],2);
+                    $Approved_qty = round($key2["Approved_qty"],2);
+                  }
+                  $data3["no_wtr"]=$NO_WTR;
+                  $data3["epoch"]=$key["epoch"];
+                  $data3["wh_sc"]=$key["wh_sc"];
+                  $data3["waktu"]=$key["waktu"];
+                  $data3["id_wtr"]=$key["id_wtr"];
+                  $data3["presentase"]=$presentase;
+                  $data3["request_qty"]=$request_qty;
+                  $data3["Approved_qty"]=$Approved_qty;
+                  array_push($data_final, $data3);
+              }
+
+        			 $this->response($data_final, REST_Controller::HTTP_OK);
        
 	}
 }
