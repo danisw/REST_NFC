@@ -93,8 +93,9 @@ public function index_get(){}
 		$sql = "SELECT a.User_ID as id, a.Emp_ID as username, a.First_name+' '+a.Middle_Name+' '+a.Last_Name as nama
 				from dbo.THRMEmpPersonalData a
 				where a.Emp_ID='$username' ";
-		$sql2="SELECT DISTINCT TOP 1 a.Emp_ID as username,a.User_ID as id,a.First_name+' '+a.Middle_Name+' '+a.Last_Name as nama,d.WH_ID,e.wh_name , a.Company_ID as company
+		$sql2="SELECT DISTINCT TOP 1 a.Emp_ID as username,a.User_ID as id,a.First_name+' '+a.Middle_Name+' '+a.Last_Name as nama,d.WH_ID,e.wh_name , b.Company_Name as company, a.Company_ID as company_id
 				from THRMEmpPersonalData a
+				left join dbo.THRMCompany b on a.Company_ID=b.Company_ID
 				left join TAppGroupUser c on a.User_ID=c.User_ID
 				left join TappGroupData d on c.AppGroup_ID=d.AppGroup_ID
 				INNER JOIN TAccWHLocation e on d.WH_ID=e.wh_id
