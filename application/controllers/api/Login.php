@@ -38,6 +38,7 @@ public function index_get(){}
 						{
 							//echo "Authenticated1";
 							$status_AD=1;
+							//$status_AD=0;
 							// $sql = "SELECT id, username, nama FROM nfc_users WHERE username = '$username' ";
 							//  $query2 = $this->db->query($sql);
 		     //    			 $data2=$query2->result_array();
@@ -46,7 +47,8 @@ public function index_get(){}
 						}
 						else if(strpos($extended_error,"data 52e")>0)
 						{
-							$status_AD=1;
+							 //$status_AD=1;
+							$status_AD=0;
 							
 						}
 						else if(strpos($extended_error,"data 525")>0)
@@ -104,7 +106,8 @@ public function index_get(){}
 		 $data2=$query2->result_array();
 		$this->response($data2, REST_Controller::HTTP_OK);	
 	}else{
-			$this->response("Gagal", REST_Controller::HTTP_OK);	
+
+			$this->response([], REST_Controller::HTTP_OK);	
 	 }
 					
     }
